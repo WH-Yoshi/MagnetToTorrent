@@ -41,10 +41,10 @@ android {
 
 dependencies {
     implementation(files("libs/jlibtorrent-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-arm-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-arm64-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-x86-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-x86_64-1.2.19.0.jar"))
+    implementation(files("libs/jlibtorrent-android-arm-1.2.19.0.jar"))
+    implementation(files("libs/jlibtorrent-android-arm64-1.2.19.0.jar"))
+    implementation(files("libs/jlibtorrent-android-x86-1.2.19.0.jar"))
+    implementation(files("libs/jlibtorrent-android-x86_64-1.2.19.0.jar"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
