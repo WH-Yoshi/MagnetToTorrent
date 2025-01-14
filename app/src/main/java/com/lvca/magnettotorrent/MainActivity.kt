@@ -7,8 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,24 +31,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.frostwire.jlibtorrent.Entry
 import com.frostwire.jlibtorrent.SessionManager
-import com.frostwire.jlibtorrent.SessionParams
-import com.frostwire.jlibtorrent.SettingsPack
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiaryContainer
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.timer
+import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
 fun MagnetToTorrentApp() {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,7 +72,6 @@ fun MagnetToTorrentApp() {
                         text = "Magnet to Torrent",
                         fontWeight = FontWeight.Bold,
                         color = md_theme_light_onTertiary,
-
                     )
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
@@ -79,7 +79,7 @@ fun MagnetToTorrentApp() {
                 )
             )
         },
-        snackbarHost = { androidx.compose.material3.SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -89,6 +89,7 @@ fun MagnetToTorrentApp() {
             color = md_theme_light_tertiary
         ) {
             val magnetLink = remember { mutableStateOf("") }
+            val imeInsets = WindowInsets.ime
 
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -102,8 +103,7 @@ fun MagnetToTorrentApp() {
                             magnetLink.value = newValue
                         },
                         label = { Text("Enter magnet link") },
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = md_theme_light_tertiary,
                             unfocusedContainerColor = md_theme_light_tertiary,
@@ -114,13 +114,16 @@ fun MagnetToTorrentApp() {
                             focusedIndicatorColor = md_theme_light_onTertiary,
                             unfocusedIndicatorColor = md_theme_light_onTertiary,
                         ),
+                        singleLine = true,
                     )
                     Text(
                         text = "Magnet Link: ${magnetLink.value}",
                         modifier = Modifier.padding(top = 16.dp),
-                        color = md_theme_light_onTertiary
+                        color = md_theme_light_onTertiary,
+                        maxLines = 10,
                     )
                 }
+
                 ExtendedFloatingActionButton(
                     onClick = {
                         convertMagnetToTorrent(magnetLink.value)
@@ -133,8 +136,11 @@ fun MagnetToTorrentApp() {
                     },
                     modifier = Modifier
                         .wrapContentSize()
-                        .padding(16.dp)
-                        .align(androidx.compose.ui.Alignment.BottomEnd),
+                        .padding(
+                            bottom = 16.dp + imeInsets.asPaddingValues().calculateBottomPadding(),
+                            end = 16.dp
+                        )
+                        .align(Alignment.BottomEnd),
                     containerColor = md_theme_light_tertiaryContainer,
                 ) {
                     Icon(
@@ -154,6 +160,31 @@ fun MagnetToTorrentApp() {
 }
 
 fun convertMagnetToTorrent(magnetLink: String) {
+    if (magnetLink.isEmpty()) {
+        println("Error: Magnet link is empty")
+        return
+    }
+    val sessionManager = SessionManager()
+
+    try {
+        sessionManager.start()
+
+        val data = sessionManager.fetchMagnet(magnetLink, 30)
+        if (data == null) {
+            println("Error: Unable to fetch metadata")
+            return
+        }
+
+        val file = File("/storage/emulated/0/Download/file.torrent")
+        FileOutputStream(file).use { fos ->
+            fos.write(data)
+        }
+
+    } catch (e: Exception) {
+        println("Error: ${e.message}")
+    } finally {
+        sessionManager.stop()
+    }
 }
 
 @Preview(showBackground = true)

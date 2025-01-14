@@ -45,6 +45,8 @@ dependencies {
     implementation(files("libs/jlibtorrent-android-arm64-1.2.19.0.jar"))
     implementation(files("libs/jlibtorrent-android-x86-1.2.19.0.jar"))
     implementation(files("libs/jlibtorrent-android-x86_64-1.2.19.0.jar"))
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.easypermissions.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
