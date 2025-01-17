@@ -1,14 +1,15 @@
 package com.lvca.magnettotorrent
 
-import android.content.Context
+import android.app.DownloadManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
@@ -57,7 +59,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class MainActivity : ComponentActivity() {
     private val magnetLink = mutableStateOf("")
@@ -175,7 +176,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         }
                         Column(
                             modifier = Modifier
-                                .padding(top = 16.dp)
+                                .padding(top = 16.dp, bottom = 56.dp)
                                 .height(400.dp)
                         ) {
                             Text(
@@ -201,6 +202,30 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         )
                         .align(Alignment.BottomEnd)
                 ) {
+                    AnimatedVisibility(
+                        visible = magnetLink.value.isNotEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(bottom = 16.dp)
+                            .wrapContentSize()
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                magnetLink.value = ""
+                                torrentLogs.value = ""
+                            },
+                            containerColor = md_theme_light_tertiaryContainer,
+                            content = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel),
+                                    contentDescription = "Clear Text",
+                                    tint = md_theme_light_tertiary
+                                )
+                            }
+                        )
+                    }
                     FloatingActionButton(
                         onClick = {
                             insertLastCopiedMagnetLink(context = context, magnetLink = magnetLink)
@@ -210,13 +235,14 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                             .align(Alignment.End)
                             .wrapContentSize()
                             .padding(bottom = 16.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.content_paste_24dp_e8eaed_fill0_wght400_grad0_opsz24),
-                            contentDescription = "Paste",
-                            tint = md_theme_light_tertiary
-                        )
-                    }
+                        content = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.paste),
+                                contentDescription = "Copy",
+                                tint = md_theme_light_tertiary
+                            )
+                        }
+                    )
                     FloatingActionButton(
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
@@ -227,35 +253,32 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                             }
                         },
                         modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(bottom = 16.dp)
                             .wrapContentSize(),
                         containerColor = md_theme_light_tertiaryContainer,
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_sync),
-                            contentDescription = "Convert",
-                            tint = md_theme_light_tertiary
-                        )
-                    }
+                        content = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_sync),
+                                contentDescription = "Convert",
+                                tint = md_theme_light_tertiary
+                            )
+                        }
+                    )
                     ExtendedFloatingActionButton(
                         onClick = {
-                            val downloadFolder = Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS)
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.setDataAndType(Uri.fromFile(downloadFolder), "resource/folder")
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             try {
-                                context.startActivity(intent)
+                                context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
                             } catch (e: Exception) {
                                 Toast.makeText(context, "No application found to open the folder", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier
-                            .wrapContentSize()
-                            .padding(top = 16.dp),
+                            .wrapContentSize(),
                         containerColor = md_theme_light_tertiaryContainer,
                         icon = {
                             Icon(
-                                painter = painterResource(id = R.drawable.folder_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                                painter = painterResource(id = R.drawable.folder),
                                 contentDescription = "Open downloads folder",
                                 tint = md_theme_light_tertiary
                             )
@@ -271,4 +294,10 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewMagnetToTorrentApp() {
+    MagnetToTorrentApp(mutableStateOf("magnet:?xt=urn:btih:3a4f3f4a7e8b4e4f3a4f3f4a7e8b4e4f"))
 }
