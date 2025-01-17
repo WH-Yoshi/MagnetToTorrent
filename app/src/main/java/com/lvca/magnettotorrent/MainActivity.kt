@@ -48,9 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
+import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiaryContainer
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
@@ -110,6 +110,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                     Text(
                         text = "Magnet to Torrent",
                         fontWeight = FontWeight.Bold,
+                        fontFamily = UbuntuFontFamily,
                         color = md_theme_light_onTertiary,
                     )
                 },
@@ -138,7 +139,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         onValueChange = { newValue ->
                             magnetLink.value = newValue
                         },
-                        label = { Text("Enter magnet link") },
+                        label = { Text("Enter magnet link", fontFamily = UbuntuFontFamily) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = md_theme_light_tertiary,
@@ -164,14 +165,16 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         ) {
                             Text(
                                 text = "Magnet Link:",
-                                color = md_theme_light_onTertiary
+                                color = md_theme_light_onTertiary,
+                                fontFamily = UbuntuFontFamily
                             )
                             Text(
                                 text = magnetLink.value,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .verticalScroll(scrollState),
-                                color = md_theme_light_onTertiary
+                                color = md_theme_light_onTertiary,
+                                fontFamily = UbuntuFontFamily
                             )
                         }
                         Column(
@@ -181,7 +184,8 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         ) {
                             Text(
                                 text = "Logs:",
-                                color = md_theme_light_onTertiary
+                                color = md_theme_light_onTertiary,
+                                fontFamily = UbuntuFontFamily
                             )
                             Text(
                                 text = torrentLogs.value,
@@ -189,6 +193,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                                     .width(304.dp)
                                     .verticalScroll(scrollState),
                                 color = md_theme_light_onTertiaryContainer,
+                                fontFamily = UbuntuFontFamily
                             )
                         }
                     }
@@ -286,7 +291,8 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         text = {
                             Text(
                                 text = "Downloads",
-                                color = md_theme_light_tertiary
+                                color = md_theme_light_tertiary,
+                                fontFamily = UbuntuFontFamily
                             )
                         }
                     )
@@ -294,10 +300,4 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewMagnetToTorrentApp() {
-    MagnetToTorrentApp(mutableStateOf("magnet:?xt=urn:btih:3a4f3f4a7e8b4e4f3a4f3f4a7e8b4e4f"))
 }

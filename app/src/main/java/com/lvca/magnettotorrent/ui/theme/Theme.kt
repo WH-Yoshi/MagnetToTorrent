@@ -9,6 +9,11 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import com.lvca.magnettotorrent.R
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -73,6 +78,17 @@ private val DarkColorScheme = darkColorScheme(
     surfaceTint = md_theme_dark_surfaceTint,
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
+)
+
+val UbuntuFontFamily = FontFamily(
+    Font(R.font.ubunturegular, FontWeight.Normal),
+    Font(R.font.ubuntuitalic, FontWeight.Normal, FontStyle.Italic),
+    Font(R.font.ubuntubold, FontWeight.Bold),
+    Font(R.font.ubuntubolditalic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.ubuntulight, FontWeight.Light),
+    Font(R.font.ubuntulightitalic, FontWeight.Light, FontStyle.Italic),
+    Font(R.font.ubuntumedium, FontWeight.Medium),
+    Font(R.font.ubuntumediumitalic, FontWeight.Medium, FontStyle.Italic)
 )
 
 @Composable
