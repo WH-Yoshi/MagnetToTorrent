@@ -1,25 +1,35 @@
 package com.lvca.magnettotorrent
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -28,31 +38,52 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.frostwire.jlibtorrent.SessionManager
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
+import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiaryContainer
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiaryContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 
 class MainActivity : ComponentActivity() {
+    private val magnetLink = mutableStateOf("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MagnetToTorrentTheme {
-                MagnetToTorrentApp()
+                MagnetToTorrentApp(magnetLink)
+            }
+        }
+
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            val magnetLinkValue = intent.dataString
+            if (magnetLinkValue != null && magnetLinkValue.startsWith("magnet:")) {
+                magnetLink.value = magnetLinkValue
             }
         }
     }
@@ -60,9 +91,16 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MagnetToTorrentApp() {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
+    val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val torrentLogs = remember { mutableStateOf("") }
+    val imeInsets = WindowInsets.ime
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(torrentLogs.value) {
+        scrollState.scrollTo(scrollState.maxValue)
+    }
 
     Scaffold(
         topBar = {
@@ -79,7 +117,7 @@ fun MagnetToTorrentApp() {
                 )
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -88,13 +126,10 @@ fun MagnetToTorrentApp() {
                 .background(md_theme_light_tertiary),
             color = md_theme_light_tertiary
         ) {
-            val magnetLink = remember { mutableStateOf("") }
-            val imeInsets = WindowInsets.ime
-
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 32.dp)
                 ) {
                     OutlinedTextField(
@@ -116,81 +151,124 @@ fun MagnetToTorrentApp() {
                         ),
                         singleLine = true,
                     )
-                    Text(
-                        text = "Magnet Link: ${magnetLink.value}",
-                        modifier = Modifier.padding(top = 16.dp),
-                        color = md_theme_light_onTertiary,
-                        maxLines = 10,
-                    )
-                }
-
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        convertMagnetToTorrent(magnetLink.value)
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                message = "Converting...",
-                                duration = SnackbarDuration.Short
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .height(300.dp)
+                        ) {
+                            Text(
+                                text = "Magnet Link:",
+                                color = md_theme_light_onTertiary
+                            )
+                            Text(
+                                text = magnetLink.value,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(scrollState),
+                                color = md_theme_light_onTertiary
                             )
                         }
-                    },
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .height(400.dp)
+                        ) {
+                            Text(
+                                text = "Logs:",
+                                color = md_theme_light_onTertiary
+                            )
+                            Text(
+                                text = torrentLogs.value,
+                                modifier = Modifier
+                                    .width(304.dp)
+                                    .verticalScroll(scrollState),
+                                color = md_theme_light_onTertiaryContainer,
+                            )
+                        }
+                    }
+                }
+                Column(
                     modifier = Modifier
                         .wrapContentSize()
                         .padding(
                             bottom = 16.dp + imeInsets.asPaddingValues().calculateBottomPadding(),
                             end = 16.dp
                         )
-                        .align(Alignment.BottomEnd),
-                    containerColor = md_theme_light_tertiaryContainer,
+                        .align(Alignment.BottomEnd)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_sync),
-                        contentDescription = "Convert",
-                        tint = md_theme_light_tertiary
-                    )
-                    Text(
-                        text = "Convert",
-                        color = md_theme_light_tertiary,
-                        modifier = Modifier.padding(start = 8.dp)
+                    FloatingActionButton(
+                        onClick = {
+                            insertLastCopiedMagnetLink(context = context, magnetLink = magnetLink)
+                        },
+                        containerColor = md_theme_light_tertiaryContainer,
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .wrapContentSize()
+                            .padding(bottom = 16.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.content_paste_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                            contentDescription = "Paste",
+                            tint = md_theme_light_tertiary
+                        )
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val result = convertMagnetToTorrent(magnetLink.value, torrentLogs)
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, context.getString(result), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .wrapContentSize(),
+                        containerColor = md_theme_light_tertiaryContainer,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_sync),
+                            contentDescription = "Convert",
+                            tint = md_theme_light_tertiary
+                        )
+                    }
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            val downloadFolder = Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(Uri.fromFile(downloadFolder), "resource/folder")
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "No application found to open the folder", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(top = 16.dp),
+                        containerColor = md_theme_light_tertiaryContainer,
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.folder_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                                contentDescription = "Open downloads folder",
+                                tint = md_theme_light_tertiary
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = "Downloads",
+                                color = md_theme_light_tertiary
+                            )
+                        }
                     )
                 }
             }
         }
-    }
-}
-
-fun convertMagnetToTorrent(magnetLink: String) {
-    if (magnetLink.isEmpty()) {
-        println("Error: Magnet link is empty")
-        return
-    }
-    val sessionManager = SessionManager()
-
-    try {
-        sessionManager.start()
-
-        val data = sessionManager.fetchMagnet(magnetLink, 30)
-        if (data == null) {
-            println("Error: Unable to fetch metadata")
-            return
-        }
-
-        val file = File("/storage/emulated/0/Download/file.torrent")
-        FileOutputStream(file).use { fos ->
-            fos.write(data)
-        }
-
-    } catch (e: Exception) {
-        println("Error: ${e.message}")
-    } finally {
-        sessionManager.stop()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MagnetToTorrentPreview() {
-    MagnetToTorrentTheme {
-        MagnetToTorrentApp()
     }
 }
