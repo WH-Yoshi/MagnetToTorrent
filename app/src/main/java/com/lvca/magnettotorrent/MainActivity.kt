@@ -48,7 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
@@ -111,6 +113,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         text = "Magnet to Torrent",
                         fontWeight = FontWeight.Bold,
                         fontFamily = UbuntuFontFamily,
+                        fontSize = 30.sp,
                         color = md_theme_light_onTertiary,
                     )
                 },
@@ -132,8 +135,15 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 32.dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 16.dp)
                 ) {
+                    Text(
+                        text = "Enter a magnet link to convert it into a torrent file",
+                        color = md_theme_light_onTertiary,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp
+                    )
                     OutlinedTextField(
                         value = magnetLink.value,
                         onValueChange = { newValue ->
@@ -152,6 +162,14 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                             unfocusedIndicatorColor = md_theme_light_onTertiary,
                         ),
                         singleLine = true,
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.magnet),
+                                contentDescription = "Magnet Icon",
+                                tint = md_theme_light_onTertiary,
+                                modifier = Modifier.height(32.dp)
+                            )
+                        }
                     )
                     Column(
                         modifier = Modifier
@@ -166,7 +184,8 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                             Text(
                                 text = "Magnet Link:",
                                 color = md_theme_light_onTertiary,
-                                fontFamily = UbuntuFontFamily
+                                fontFamily = UbuntuFontFamily,
+                                fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = magnetLink.value,
@@ -185,7 +204,8 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                             Text(
                                 text = "Logs:",
                                 color = md_theme_light_onTertiary,
-                                fontFamily = UbuntuFontFamily
+                                fontFamily = UbuntuFontFamily,
+                                fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = torrentLogs.value,
@@ -290,7 +310,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                         },
                         text = {
                             Text(
-                                text = "Downloads",
+                                text = "Open Folder",
                                 color = md_theme_light_tertiary,
                                 fontFamily = UbuntuFontFamily
                             )
