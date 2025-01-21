@@ -2,11 +2,13 @@ package com.lvca.magnettotorrent
 
 import android.app.DownloadManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresExtension
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
@@ -60,11 +61,11 @@ import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiaryContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     private val magnetLink = mutableStateOf("")
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -92,6 +93,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
@@ -99,10 +101,11 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
     val context = LocalContext.current
     val torrentLogs = remember { mutableStateOf("") }
     val imeInsets = WindowInsets.ime
-    val scrollState = rememberScrollState()
+    val magnetLinkScrollState = rememberScrollState()
+    val torrentLogsScrollState = rememberScrollState()
 
     LaunchedEffect(torrentLogs.value) {
-        scrollState.scrollTo(scrollState.maxValue)
+        torrentLogsScrollState.scrollTo(torrentLogsScrollState.maxValue)
     }
 
     Scaffold(
@@ -191,7 +194,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                                 text = magnetLink.value,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .verticalScroll(scrollState),
+                                    .verticalScroll(magnetLinkScrollState),
                                 color = md_theme_light_onTertiary,
                                 fontFamily = UbuntuFontFamily
                             )
@@ -211,7 +214,7 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                                 text = torrentLogs.value,
                                 modifier = Modifier
                                     .width(304.dp)
-                                    .verticalScroll(scrollState),
+                                    .verticalScroll(torrentLogsScrollState),
                                 color = md_theme_light_onTertiaryContainer,
                                 fontFamily = UbuntuFontFamily
                             )
@@ -270,11 +273,12 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
                     )
                     FloatingActionButton(
                         onClick = {
+                            if (magnetLink.value.isEmpty()) {
+                                Toast.makeText(context, R.string.magnet_link_is_empty, Toast.LENGTH_SHORT).show()
+                                return@FloatingActionButton
+                            }
                             CoroutineScope(Dispatchers.IO).launch {
-                                val result = convertMagnetToTorrent(magnetLink.value, torrentLogs)
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, context.getString(result), Toast.LENGTH_SHORT).show()
-                                }
+                                convertMagnetToTorrent(context, magnetLink.value, torrentLogs)
                             }
                         },
                         modifier = Modifier

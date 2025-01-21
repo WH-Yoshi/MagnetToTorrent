@@ -1,36 +1,43 @@
 package com.lvca.magnettotorrent
 
+import android.content.Context
 import android.net.http.NetworkException
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.MutableState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-fun convertMagnetToTorrent(magnetLink: String, logState: MutableState<String>): Int {
-    if (magnetLink.isEmpty()) {
-        return R.string.magnet_link_is_empty
-    }
-
-    val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    if (!outputDir.exists()) {
+suspend fun convertMagnetToTorrent(context: Context, magnetLink: String, logState: MutableState<String>) {
+    val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+    if (outputDir != null && !outputDir.exists()) {
         outputDir.mkdirs()
     }
 
     val downloader = TorrentDownloader()
 
     try {
-        return downloader.fetchAndSaveMagnet(magnetLink, outputDir, logState)
+        downloader.fetchAndSaveMagnet(context, magnetLink, outputDir!!, logState)
     } catch (e: IOException) {
         logState.value += "File operation problem: ${e.message}\n"
-        return R.string.io_exception_occurred
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(context, R.string.io_exception_occurred, Toast.LENGTH_SHORT).show()
+        }
     } catch (e: NetworkException) {
         logState.value += "Network issue: ${e.message}\n"
-        return R.string.network_exception_occurred
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(context, R.string.network_exception_occurred, Toast.LENGTH_SHORT).show()
+        }
     } catch (e: Exception) {
         logState.value += "Unknown problem occurred: ${e.message}\n"
-        return R.string.error_occurred
+        CoroutineScope(Dispatchers.Main).launch {
+            Toast.makeText(context, R.string.error_occurred, Toast.LENGTH_SHORT).show()
+        }
     } finally {
         downloader.shutdown()
     }
