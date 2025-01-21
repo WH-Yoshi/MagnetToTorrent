@@ -3,7 +3,7 @@
     <string name="no_valid_magnet_link_found_in_clipboard">No valid magnet link found in clipboard</string>
     <string name="clipboard_is_empty">Clipboard is empty</string>
     <string name="magnet_link_is_empty">Magnet link is empty</string>
-    <string name="unable_to_fetch_torrent_data">Unable to fetch torrent data</string>
+    <string name="unable_to_fetch_torrent_data">Unable to fetch torrent data, received no metadata</string>
     <string name="error_occurred">Unknown error while fetching torrent</string>
     <string name="torrent_file_saved">Torrent file saved successfully</string>
     <string name="permission_denied">Permission denied, app won\'t work</string>
@@ -16,4 +16,6 @@
     <string name="allow_permission">Please allow Write permission</string>
     <string name="dht_bootstrap_timeout">DHT bootstrap timeout</string>
     <string name="torrent_file_already_exists">Torrent file already exists</string>
+    <string name="io_exception_occurred">Could not write file content</string>
+    <string name="network_exception_occurred">Network issue</string>
 </resources>
