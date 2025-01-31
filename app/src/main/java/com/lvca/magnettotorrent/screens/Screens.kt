@@ -5,15 +5,9 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresExtension
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,8 +26,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -46,11 +38,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +60,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MagnetToTorrentScreen(navController: NavController, magnetLink: MutableState<String>, coroutineScope: CoroutineScope) {
-    val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val torrentLogs = remember { mutableStateOf("") }
     val imeInsets = WindowInsets.ime
@@ -92,7 +81,7 @@ fun MagnetToTorrentScreen(navController: NavController, magnetLink: MutableState
                             .padding(start = 12.dp)
                             .clickable {
                                 coroutineScope.launch {
-                                    navController.navigate("second")
+                                    navController.navigate(Routes.MENU)
                                 }
                             }
                     )
@@ -107,7 +96,7 @@ fun MagnetToTorrentScreen(navController: NavController, magnetLink: MutableState
                             .padding(end = 12.dp)
                             .clickable {
                                 coroutineScope.launch {
-                                    navController.navigate("second")
+                                    navController.navigate(Routes.SETTINGS)
                                 }
                             }
                     )
@@ -117,7 +106,6 @@ fun MagnetToTorrentScreen(navController: NavController, magnetLink: MutableState
                 )
             )
         },
-        snackbarHost = { SnackbarHost(snackBarHostState) },
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -270,28 +258,78 @@ fun MagnetToTorrentScreen(navController: NavController, magnetLink: MutableState
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecondScreen() {
-    AnimatedContent(
-        targetState = true,
-        transitionSpec = {
-            slideInHorizontally(
-                initialOffsetX = { fullWidth -> fullWidth },
-                animationSpec = tween(durationMillis = 300)
-            ) togetherWith fadeOut(animationSpec = tween(durationMillis = 300))
-        }
-    ) { targetState ->
-        Box(
+fun SettingsScreen(navController: NavController, coroutineScope: CoroutineScope) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_menu),
+                        contentDescription = "Menu Icon",
+                        tint = md_theme_light_onTertiary,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    navController.navigate(Routes.MENU)
+                                }
+                            }
+                    )
+                },
+                title = {  },
+                actions = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_down),
+                        contentDescription = "Settings Icon",
+                        tint = md_theme_light_onTertiary,
+                        modifier = Modifier
+                            .padding(end = 12.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    navController.popBackStack()
+                                }
+                            }
+                    )
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = md_theme_light_tertiary
+                )
+            )
+        },
+    ) { innerPadding ->
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .padding(innerPadding)
+                .background(md_theme_light_tertiary),
+            color = md_theme_light_tertiary
         ) {
-            Text(
-                text = "Second Screen",
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    Text(
+                        text = "Settings",
+                        color = md_theme_light_onTertiary,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.sp,
+                        modifier = Modifier
+                            .padding(top = 16.dp, bottom = 32.dp)
+                    )
+                    Text(
+                        text = "Coming soon...",
+                        color = md_theme_light_onTertiary,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp
+                    )
+                }
+            }
         }
     }
 }
@@ -300,9 +338,8 @@ fun SecondScreen() {
 @Preview
 @Composable
 fun MagnetToTorrentScreenPreview() {
-    MagnetToTorrentScreen(
+    SettingsScreen(
         navController = NavController(context = LocalContext.current),
-        magnetLink = mutableStateOf(""),
-        coroutineScope = CoroutineScope(Dispatchers.IO)
+        coroutineScope = CoroutineScope(Dispatchers.IO),
     )
 }

@@ -7,22 +7,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresExtension
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lvca.magnettotorrent.motions.*
-import com.lvca.magnettotorrent.screens.*
+import com.lvca.magnettotorrent.motions.materialSharedAxisYIn
+import com.lvca.magnettotorrent.motions.materialSharedAxisYOut
+import com.lvca.magnettotorrent.screens.MagnetToTorrentScreen
+import com.lvca.magnettotorrent.screens.Routes
+import com.lvca.magnettotorrent.screens.SettingsScreen
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
+
 
 class MainActivity : ComponentActivity() {
     private val magnetLink = mutableStateOf("")
@@ -63,28 +61,36 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
     val coroutineScope = rememberCoroutineScope()
     val initialOffset = 0.10f
 
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(navController = navController, startDestination = Routes.MTT) {
         composable(
-            route = "main",
+            route = Routes.MTT,
             enterTransition = {
-                materialSharedAxisXIn(initialOffsetX = { -(it * initialOffset).toInt() })
+                materialSharedAxisYIn(
+                    initialOffsetY = { -(it * initialOffset).toInt() },
+                )
             },
             exitTransition = {
-                materialSharedAxisXOut(targetOffsetX = { (it * initialOffset).toInt() })
+                materialSharedAxisYOut(
+                    targetOffsetY = { -(it * initialOffset).toInt() },
+                )
             },
         ) {
             MagnetToTorrentScreen(navController, magnetLink, coroutineScope)
         }
         composable(
-            route = "second",
+            route = Routes.SETTINGS,
             enterTransition = {
-                materialSharedAxisXIn(initialOffsetX = { (it * initialOffset).toInt() })
+                materialSharedAxisYIn(
+                    initialOffsetY = { (it * initialOffset).toInt() },
+                )
             },
             exitTransition = {
-                materialSharedAxisXOut(targetOffsetX = { -(it * initialOffset).toInt() })
+                materialSharedAxisYOut(
+                    targetOffsetY = { (it * initialOffset).toInt() },
+                )
             },
         ) {
-            SecondScreen()
+            SettingsScreen(navController, coroutineScope)
         }
     }
 }
