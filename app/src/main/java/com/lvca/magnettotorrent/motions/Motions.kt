@@ -1,5 +1,9 @@
 package com.lvca.magnettotorrent.motions
 
+import android.os.Build
+import androidx.annotation.RequiresExtension
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -12,6 +16,17 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.lvca.magnettotorrent.screens.MagnetToTorrentScreen
+import com.lvca.magnettotorrent.screens.MenuScreen
+import com.lvca.magnettotorrent.screens.Routes
+import com.lvca.magnettotorrent.screens.SettingsScreen
+import kotlinx.coroutines.CoroutineScope
 
 fun materialSharedAxisXIn(
     initialOffsetX: (fullWidth: Int) -> Int,

@@ -14,11 +14,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lvca.magnettotorrent.motions.materialSharedAxisXIn
+import com.lvca.magnettotorrent.motions.materialSharedAxisXOut
 import com.lvca.magnettotorrent.motions.materialSharedAxisYIn
 import com.lvca.magnettotorrent.motions.materialSharedAxisYOut
 import com.lvca.magnettotorrent.screens.MagnetToTorrentScreen
-import com.lvca.magnettotorrent.screens.Routes
-import com.lvca.magnettotorrent.screens.SettingsScreen
+import com.lvca.magnettotorrent.screens.*
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 
 
@@ -91,6 +92,21 @@ fun MagnetToTorrentApp(magnetLink: MutableState<String>) {
             },
         ) {
             SettingsScreen(navController, coroutineScope)
+        }
+        composable(
+            route = Routes.MENU,
+            enterTransition = {
+                materialSharedAxisXIn(
+                    initialOffsetX = { (it * initialOffset).toInt() },
+                )
+            },
+            exitTransition = {
+                materialSharedAxisXOut(
+                    targetOffsetX = { (it * initialOffset).toInt() },
+                )
+            },
+        ) {
+            MenuScreen(navController, coroutineScope)
         }
     }
 }
