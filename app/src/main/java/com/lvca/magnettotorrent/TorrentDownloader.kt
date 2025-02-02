@@ -55,6 +55,7 @@ class TorrentDownloader {
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, R.string.torrent_file_already_exists, Toast.LENGTH_SHORT).show()
             }
+            return
         }
 
         logState!!.value += "Saving torrent file...\n"

@@ -1,13 +1,12 @@
 package com.lvca.magnettotorrent.screens
 
-import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.annotation.RequiresExtension
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,20 +18,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.R
-import com.lvca.magnettotorrent.convertMagnetToTorrent
-import com.lvca.magnettotorrent.insertLastCopiedMagnetLink
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
@@ -60,13 +52,20 @@ import kotlinx.coroutines.launch
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MagnetToTorrentScreen(
+fun TorrentToMagnetScreen(
     navController: NavController,
     coroutineScope: CoroutineScope,
-    magnetLink: MutableState<String>
+    torrentFile: MutableState<Uri>
 ) {
     val context = LocalContext.current
     val imeInsets = WindowInsets.ime
+
+    val filePicker = remember {
+        Intent(Intent.ACTION_GET_CONTENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/x-bittorrent"
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -105,11 +104,11 @@ fun MagnetToTorrentScreen(
                 )
             )
         },
-    ) { innerPadding ->
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(it)
                 .background(md_theme_light_tertiary),
             color = md_theme_light_tertiary
         ) {
@@ -120,7 +119,7 @@ fun MagnetToTorrentScreen(
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.magnet_to_torrent),
+                        text = stringResource(R.string.torrent_to_magnet),
                         color = md_theme_light_onTertiary,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Bold,
@@ -129,51 +128,27 @@ fun MagnetToTorrentScreen(
                             .padding(top = 16.dp, bottom = 32.dp)
                     )
                     Text(
-                        text = stringResource(R.string.enter_or_paste_a_magnet_link_to_create_a_torrent_file),
+                        text = stringResource(R.string.upload_torrent_file),
                         color = md_theme_light_onTertiary,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Light,
                         fontSize = 14.sp
                     )
-                    OutlinedTextField(
-                        value = magnetLink.value,
-                        onValueChange = { newValue ->
-                            magnetLink.value = newValue
-                        },
-                        label = { Text(stringResource(R.string.magnet_link), fontFamily = UbuntuFontFamily) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = md_theme_light_tertiary,
-                            unfocusedContainerColor = md_theme_light_tertiary,
-                            focusedTextColor = md_theme_light_onTertiary,
-                            unfocusedTextColor = md_theme_light_onTertiary,
-                            focusedLabelColor = md_theme_light_onTertiary,
-                            unfocusedLabelColor = md_theme_light_onTertiary,
-                            focusedIndicatorColor = md_theme_light_onTertiary,
-                            unfocusedIndicatorColor = md_theme_light_onTertiary,
-                        ),
-                        singleLine = true,
-                        trailingIcon = {
-                            AnimatedVisibility(
-                                visible = magnetLink.value.isNotEmpty(),
-                                enter = fadeIn(),
-                                exit = fadeOut(),
-                                modifier = Modifier
-                                    .align(Alignment.End)
-                                    .padding(end = 12.dp)
-                                    .wrapContentSize())
-                            {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_backspace),
-                                    contentDescription = stringResource(R.string.full_backspace),
-                                    tint = md_theme_light_onTertiary,
-                                    modifier = Modifier
-                                        .clickable {
-                                            magnetLink.value = ""
-                                        }
-                                )
-                            }
-                        },
+                    Text(
+                        text = stringResource(R.string.files),
+                        color = md_theme_light_onTertiary,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                    Text(
+                        text = getFileName(context, Uri.parse(torrentFile.value.toString())),
+                        color = md_theme_light_onTertiary,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
                 Column(
@@ -187,7 +162,15 @@ fun MagnetToTorrentScreen(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            insertLastCopiedMagnetLink(context = context, magnetLink = magnetLink)
+                            try {
+                                context.startActivity(filePicker)
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.no_application_found_to_open_the_folder),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         },
                         containerColor = md_theme_light_tertiaryContainer,
                         modifier = Modifier
@@ -196,25 +179,25 @@ fun MagnetToTorrentScreen(
                             .padding(bottom = 16.dp),
                         content = {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_paste),
-                                contentDescription = stringResource(R.string.copy),
+                                painter = painterResource(id = R.drawable.ic_upload),
+                                contentDescription = stringResource(R.string.upload_icon_button),
                                 tint = md_theme_light_tertiary
                             )
                         }
                     )
                     FloatingActionButton(
                         onClick = {
-                            if (magnetLink.value.isEmpty()) {
-                                Toast.makeText(context, R.string.magnet_link_is_empty, Toast.LENGTH_SHORT).show()
+                            print(torrentFile.value)
+                            if (torrentFile.value.toString().isEmpty()) {
+                                Toast.makeText(context, R.string.torrent_file_is_empty, Toast.LENGTH_SHORT).show()
                                 return@FloatingActionButton
                             }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                convertMagnetToTorrent(context, magnetLink.value, mutableStateOf(""))
-                            }
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                convertTorrentToMagnet(context, torrentFile.value, torrentLogs)
+//                            }
                         },
                         modifier = Modifier
                             .align(Alignment.End)
-                            .padding(bottom = 16.dp)
                             .wrapContentSize(),
                         containerColor = md_theme_light_tertiaryContainer,
                         content = {
@@ -225,49 +208,29 @@ fun MagnetToTorrentScreen(
                             )
                         }
                     )
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            try {
-                                context.startActivity(Intent(DownloadManager.ACTION_VIEW_DOWNLOADS))
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.no_application_found_to_open_the_folder),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        modifier = Modifier
-                            .wrapContentSize(),
-                        containerColor = md_theme_light_tertiaryContainer,
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_folder),
-                                contentDescription = stringResource(R.string.open_folder),
-                                tint = md_theme_light_tertiary
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(R.string.download_folder),
-                                color = md_theme_light_tertiary,
-                                fontFamily = UbuntuFontFamily
-                            )
-                        }
-                    )
                 }
             }
         }
     }
 }
 
+@Composable
+fun getFileName(context: Context, uri: Uri): String {
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+    val nameIndex = cursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+    cursor?.moveToFirst()
+    val fileName = nameIndex?.let { cursor.getString(it) } ?: stringResource(R.string.no_file_imported)
+    cursor?.close()
+    return fileName
+}
+
 @Preview
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun MagnetToTorrentScreenPreview() {
-    MagnetToTorrentScreen(
+fun TorrentToMagnetScreenPreview() {
+    TorrentToMagnetScreen(
         navController = NavController(context = LocalContext.current),
-        magnetLink = mutableStateOf(""),
+        torrentFile = mutableStateOf<Uri>(Uri.EMPTY),
         coroutineScope = CoroutineScope(Dispatchers.IO)
     )
 }
