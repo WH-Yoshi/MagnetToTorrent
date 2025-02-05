@@ -31,7 +31,7 @@
     <string name="upload_icon_button">Upload Icon Button</string>
     <string name="download_folder">Download</string>
     <string name="magnet_to_torrent_description">Fetch a torrent file from a magnet.</string>
-    <string name="torrent_to_magnet_description">Generate magnet link from a torrent file</string>
+    <string name="torrent_to_magnet_description">Generate a magnet link from a torrent file</string>
     <string name="files">Imported file:</string>
     <string name="no_file_imported">No file imported</string>
 </resources>
