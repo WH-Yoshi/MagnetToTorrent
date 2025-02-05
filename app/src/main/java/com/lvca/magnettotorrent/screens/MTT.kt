@@ -19,10 +19,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.R
+import com.lvca.magnettotorrent.components.LogsScreen
 import com.lvca.magnettotorrent.convertMagnetToTorrent
 import com.lvca.magnettotorrent.insertLastCopiedMagnetLink
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
@@ -67,6 +69,12 @@ fun MagnetToTorrentScreen(
 ) {
     val context = LocalContext.current
     val imeInsets = WindowInsets.ime
+    val logsState = remember { mutableStateListOf<String>() }
+    val logsTitle = remember { mutableStateOf(context.getString(R.string.logs)) }
+
+    LaunchedEffect(Unit) {
+        magnetLink.value = ""
+    }
 
     Scaffold(
         topBar = {
@@ -170,11 +178,14 @@ fun MagnetToTorrentScreen(
                                     modifier = Modifier
                                         .clickable {
                                             magnetLink.value = ""
+                                            logsState.clear()
                                         }
                                 )
                             }
                         },
                     )
+                    HorizontalDivider(Modifier.padding(top = 16.dp))
+                    LogsScreen(logsState = logsState, logsTitle = logsTitle.value)
                 }
                 Column(
                     modifier = Modifier
@@ -209,7 +220,7 @@ fun MagnetToTorrentScreen(
                                 return@FloatingActionButton
                             }
                             CoroutineScope(Dispatchers.IO).launch {
-                                convertMagnetToTorrent(context, magnetLink.value, mutableStateOf(""))
+                                convertMagnetToTorrent(context, magnetLink.value, logsState, logsTitle)
                             }
                         },
                         modifier = Modifier

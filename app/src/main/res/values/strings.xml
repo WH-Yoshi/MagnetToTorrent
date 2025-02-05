@@ -34,4 +34,17 @@
     <string name="torrent_to_magnet_description">Generate a magnet link from a torrent file</string>
     <string name="files">Imported file:</string>
     <string name="no_file_imported">No file imported</string>
+    <string name="file_operation_problem">File operation problem:</string>
+    <string name="network_issue">Network issue:</string>
+    <string name="unknown_problem_occurred">Unknown problem occurred:</string>
+    <string name="with_longer_timeout_of_5mins">with longer timeout of 5mins…</string>
+    <string name="for_a_maximum_of_1min">for a maximum of 1min…</string>
+    <string name="fetching_magnet_metadata">Fetching magnet metadata</string>
+    <string name="fetching_torrent_metadata">Fetching torrent metadata…</string>
+    <string name="unknown">Unknown</string>
+    <string name="saving_torrent_file">Saving torrent file…</string>
+    <string name="saved_torrent_file_to">Saved torrent file to</string>
+    <string name="logs">Logs</string>
+    <string name="loading">Loading</string>
+    <string name="error_saving_file">Error saving file:</string>
 </resources>
