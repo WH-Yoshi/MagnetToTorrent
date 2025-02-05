@@ -2,7 +2,6 @@ package com.lvca.magnettotorrent
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.frostwire.jlibtorrent.SessionManager
 import com.frostwire.jlibtorrent.TorrentInfo
 import kotlinx.coroutines.Dispatchers

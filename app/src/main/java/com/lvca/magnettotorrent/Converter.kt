@@ -7,8 +7,6 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.lvca.magnettotorrent.FileUtil.getExternalDownloadDirectory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
