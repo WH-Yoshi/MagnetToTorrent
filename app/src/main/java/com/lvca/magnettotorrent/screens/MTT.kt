@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,10 +72,6 @@ fun MagnetToTorrentScreen(
     val imeInsets = WindowInsets.ime
     val logsState = remember { mutableStateListOf<String>() }
     val logsTitle = remember { mutableStateOf(context.getString(R.string.logs)) }
-
-    LaunchedEffect(Unit) {
-        magnetLink.value = ""
-    }
 
     Scaffold(
         topBar = {
@@ -184,7 +181,7 @@ fun MagnetToTorrentScreen(
                             }
                         },
                     )
-                    HorizontalDivider(Modifier.padding(top = 16.dp))
+                    HorizontalDivider(Modifier.padding(top = 16.dp), color = Color.Gray)
                     LogsScreen(logsState = logsState, logsTitle = logsTitle.value)
                 }
                 Column(

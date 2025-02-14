@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 fun TorrentToMagnetScreen(
     navController: NavController,
     coroutineScope: CoroutineScope,
-    torrentFile: MutableState<Uri>
+    torrentFileName: MutableState<String>
 ) {
     val context = LocalContext.current
     val imeInsets = WindowInsets.ime
@@ -143,7 +143,7 @@ fun TorrentToMagnetScreen(
                         modifier = Modifier.padding(top = 16.dp)
                     )
                     Text(
-                        text = getFileName(context, Uri.parse(torrentFile.value.toString())),
+                        text = getFileName(context, Uri.parse(torrentFileName.value)),
                         color = md_theme_light_onTertiary,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Light,
@@ -187,8 +187,8 @@ fun TorrentToMagnetScreen(
                     )
                     FloatingActionButton(
                         onClick = {
-                            print(torrentFile.value)
-                            if (torrentFile.value.toString().isEmpty()) {
+                            print(torrentFileName.value)
+                            if (torrentFileName.value.isEmpty()) {
                                 Toast.makeText(context, R.string.torrent_file_is_empty, Toast.LENGTH_SHORT).show()
                                 return@FloatingActionButton
                             }
@@ -230,7 +230,7 @@ fun getFileName(context: Context, uri: Uri): String {
 fun TorrentToMagnetScreenPreview() {
     TorrentToMagnetScreen(
         navController = NavController(context = LocalContext.current),
-        torrentFile = mutableStateOf<Uri>(Uri.EMPTY),
+        torrentFileName = mutableStateOf(""),
         coroutineScope = CoroutineScope(Dispatchers.IO)
     )
 }

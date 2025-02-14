@@ -1,7 +1,6 @@
 package com.lvca.magnettotorrent
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,25 +14,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.core.net.toUri
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lvca.magnettotorrent.motions.materialSharedAxisXIn
-import com.lvca.magnettotorrent.motions.materialSharedAxisXOut
-import com.lvca.magnettotorrent.motions.toTheLeft
-import com.lvca.magnettotorrent.motions.toTheRight
-import com.lvca.magnettotorrent.screens.MagnetToTorrentScreen
-import com.lvca.magnettotorrent.screens.MenuScreen
 import com.lvca.magnettotorrent.screens.Routes
-import com.lvca.magnettotorrent.screens.SettingsScreen
-import com.lvca.magnettotorrent.screens.TorrentToMagnetScreen
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
 
 class MainActivity : ComponentActivity() {
     private val magnetLink = mutableStateOf("")
-    private val torrentFile = mutableStateOf<Uri>(Uri.EMPTY)
+    private val torrentFileName = mutableStateOf("")
     private var initialRoute = Routes.MTT
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -43,7 +31,7 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
         setContent {
             MagnetToTorrentTheme {
-                MagnetToTorrentApp(magnetLink, torrentFile, initialRoute)
+                MagnetToTorrentApp(magnetLink, torrentFileName, initialRoute)
             }
         }
     }
@@ -63,7 +51,7 @@ class MainActivity : ComponentActivity() {
                         initialRoute = Routes.MTT
                     }
                     dataString.endsWith(".torrent") -> {
-                        torrentFile.value = dataString.toUri()
+                        torrentFileName.value = dataString
                         initialRoute = Routes.TTM
                     }
                 }
@@ -76,7 +64,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MagnetToTorrentApp(
     magnetLink: MutableState<String>?,
-    torrentFile: MutableState<Uri>,
+    torrentFileName: MutableState<String>?,
     initialRoute: String
 ) {
     val navController = rememberNavController()
@@ -87,67 +75,13 @@ fun MagnetToTorrentApp(
         modifier = Modifier.fillMaxSize(),
         color = md_theme_light_tertiary
     ) {
-        NavHost(navController = navController, startDestination = initialRoute) {
-            composable(
-                route = Routes.MTT,
-                enterTransition = {
-                    materialSharedAxisXIn(
-                        initialOffsetX = { toTheRight(it, initialOffset) },
-                    )
-                },
-                exitTransition = {
-                    materialSharedAxisXOut(
-                        targetOffsetX = { toTheLeft(it, initialOffset) },
-                    )
-                },
-            ) {
-                MagnetToTorrentScreen(navController, coroutineScope, magnetLink!!)
-            }
-            composable(
-                route = Routes.SETTINGS,
-                enterTransition = {
-                    materialSharedAxisXIn(
-                        initialOffsetX = { toTheRight(it, initialOffset) },
-                    )
-                },
-                exitTransition = {
-                    materialSharedAxisXOut(
-                        targetOffsetX = { toTheLeft(it, initialOffset) },
-                    )
-                },
-            ) {
-                SettingsScreen(navController, coroutineScope)
-            }
-            composable(
-                route = Routes.MENU,
-                enterTransition = {
-                    materialSharedAxisXIn(
-                        initialOffsetX = { toTheRight(it, initialOffset) },
-                    )
-                },
-                exitTransition = {
-                    materialSharedAxisXOut(
-                        targetOffsetX = { toTheLeft(it, initialOffset) },
-                    )
-                },
-            ) {
-                MenuScreen(navController, coroutineScope)
-            }
-            composable(
-                route = Routes.TTM,
-                enterTransition = {
-                    materialSharedAxisXIn(
-                        initialOffsetX = { toTheRight(it, initialOffset) },
-                    )
-                },
-                exitTransition = {
-                    materialSharedAxisXOut(
-                        targetOffsetX = { toTheLeft(it, initialOffset) },
-                    )
-                },
-            ) {
-                TorrentToMagnetScreen(navController, coroutineScope, torrentFile)
-            }
-        }
+        NavScreen(
+            navController = navController,
+            coroutineScope = coroutineScope,
+            magnetLink = magnetLink,
+            torrentFileName = torrentFileName,
+            initialRoute = initialRoute,
+            initialOffset = initialOffset
+        )
     }
 }

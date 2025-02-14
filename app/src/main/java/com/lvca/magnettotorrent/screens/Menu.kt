@@ -39,7 +39,7 @@ fun MenuScreen(
             TopAppBar(
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_back),
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = stringResource(R.string.back_icon_button),
                         tint = md_theme_light_onTertiary,
                         modifier = Modifier
@@ -108,7 +108,7 @@ fun MenuScreen(
                     title = "Soon to come...",
                     description = "Patience is a virtue",
                 ) {
-                    navController.navigate(Routes.MENU)
+
                 }
             }
         }
