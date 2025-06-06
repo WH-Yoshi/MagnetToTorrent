@@ -47,7 +47,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-- Thanks to the developers of [FrostWire jlibtorrent](https://github.com/frostwire/frostwire-jlibtorrent) for their excellent library.
+- Thanks to the developers of [FrostWire jlibtorrent](https://github.com/frostwire/frostwire-jlibtorrent) for their library.
 - Thanks to the Android community for their support and resources.
 - Thanks to the developers of the libraries used in this project.
 - Thanks to the developers of [Seal](https://github.com/JunkFood02/Seal) app for the inspiration. Design and features are inspired by the Seal app.
