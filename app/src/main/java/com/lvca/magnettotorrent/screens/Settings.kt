@@ -1,7 +1,5 @@
 package com.lvca.magnettotorrent.screens
 
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,58 +15,67 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
+import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
+import com.lvca.magnettotorrent.ui.theme.White
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    coroutineScope: CoroutineScope
+    viewModel: MainViewModel
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            when (event) {
+                is MainViewModel.NavigationEvent.NavigateTo -> navController.navigate(event.route)
+                is MainViewModel.NavigationEvent.PopBackStack -> navController.popBackStack()
+                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {  }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                     Text(
-                        text = stringResource(id = R.string.settings),
-                        color = md_theme_light_onTertiary,
-                        fontFamily = UbuntuFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 23.sp,
-                        modifier = Modifier
-                    )
-                },
-                actions = {
+                navigationIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = stringResource(id = R.string.back_icon_button),
-                        tint = md_theme_light_onTertiary,
+                        tint = White,
                         modifier = Modifier
-                            .padding(end = 12.dp)
+                            .padding(start = 12.dp)
                             .clickable {
-                                coroutineScope.launch {
-                                    navController.popBackStack()
-                                }
+                                viewModel.onBackButtonPressed()
                             }
                     )
                 },
+                title = {
+                     Text(
+                        text = stringResource(id = R.string.settings),
+                        color = White,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 27.sp,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                     )
+                },
+                actions = {  },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = md_theme_light_tertiary
+                    containerColor = DarkGreen
                 )
             )
         },
@@ -77,8 +84,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(md_theme_light_tertiary),
-            color = md_theme_light_tertiary
+                .background(DarkGreen),
+            color = DarkGreen
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -90,7 +97,7 @@ fun SettingsScreen(
                 ) {
                     Text(
                         text = "Coming soon...",
-                        color = md_theme_light_onTertiary,
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontSize = 20.sp,
                         modifier = Modifier
@@ -100,14 +107,4 @@ fun SettingsScreen(
             }
         }
     }
-}
-
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-@Preview
-@Composable
-fun SettingsScreenPreview() {
-    SettingsScreen(
-        navController = NavController(context = LocalContext.current),
-        coroutineScope = CoroutineScope(Dispatchers.IO),
-    )
 }

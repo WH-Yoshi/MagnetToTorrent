@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,23 +41,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiaryContainer
+import com.lvca.magnettotorrent.ui.theme.White
+import com.lvca.magnettotorrent.ui.theme.DarkGreen
+import com.lvca.magnettotorrent.ui.theme.LightGreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentToMagnetScreen(
     navController: NavController,
-    coroutineScope: CoroutineScope,
-    torrentFileName: MutableState<String>
+    viewModel: MainViewModel
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            when (event) {
+                is MainViewModel.NavigationEvent.NavigateTo -> navController.navigate(event.route)
+                is MainViewModel.NavigationEvent.PopBackStack -> navController.popBackStack()
+                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {  }
+            }
+        }
+    }
+
     val context = LocalContext.current
     val imeInsets = WindowInsets.ime
 
@@ -72,35 +82,20 @@ fun TorrentToMagnetScreen(
             TopAppBar(
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_menu),
-                        contentDescription = stringResource(R.string.menu_icon),
-                        tint = md_theme_light_onTertiary,
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
+                        contentDescription = stringResource(R.string.arrow_left_icon),
+                        tint = White,
                         modifier = Modifier
                             .padding(start = 12.dp)
                             .clickable {
-                                coroutineScope.launch {
-                                    navController.navigate(Routes.MENU)
-                                }
+                                viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.MENU))
                             }
                     )
                 },
                 title = {  },
-                actions = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_settings),
-                        contentDescription = stringResource(R.string.settings_icon_button),
-                        tint = md_theme_light_onTertiary,
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .clickable {
-                                coroutineScope.launch {
-                                    navController.navigate(Routes.SETTINGS)
-                                }
-                            }
-                    )
-                },
+                actions = {  },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = md_theme_light_tertiary
+                    containerColor = DarkGreen
                 )
             )
         },
@@ -109,8 +104,8 @@ fun TorrentToMagnetScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .background(md_theme_light_tertiary),
-            color = md_theme_light_tertiary
+                .background(DarkGreen),
+            color = DarkGreen
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -120,7 +115,7 @@ fun TorrentToMagnetScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.torrent_to_magnet),
-                        color = md_theme_light_onTertiary,
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 25.sp,
@@ -129,22 +124,22 @@ fun TorrentToMagnetScreen(
                     )
                     Text(
                         text = stringResource(R.string.upload_torrent_file),
-                        color = md_theme_light_onTertiary,
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Light,
                         fontSize = 14.sp
                     )
                     Text(
                         text = stringResource(R.string.files),
-                        color = md_theme_light_onTertiary,
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         modifier = Modifier.padding(top = 16.dp)
                     )
                     Text(
-                        text = getFileName(context, Uri.parse(torrentFileName.value)),
-                        color = md_theme_light_onTertiary,
+                        text = getFileName(context, Uri.parse(viewModel.torrentFileName.value)),  // Use the KTX extension function String.toUri instead?
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Light,
                         fontSize = 14.sp,
@@ -172,7 +167,7 @@ fun TorrentToMagnetScreen(
                                 ).show()
                             }
                         },
-                        containerColor = md_theme_light_tertiaryContainer,
+                        containerColor = LightGreen,
                         modifier = Modifier
                             .align(Alignment.End)
                             .wrapContentSize()
@@ -181,14 +176,14 @@ fun TorrentToMagnetScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_upload),
                                 contentDescription = stringResource(R.string.upload_icon_button),
-                                tint = md_theme_light_tertiary
+                                tint = DarkGreen
                             )
                         }
                     )
                     FloatingActionButton(
                         onClick = {
-                            print(torrentFileName.value)
-                            if (torrentFileName.value.isEmpty()) {
+                            print(viewModel.torrentFileName.value)
+                            if (viewModel.torrentFileName.value.isEmpty()) {
                                 Toast.makeText(context, R.string.torrent_file_is_empty, Toast.LENGTH_SHORT).show()
                                 return@FloatingActionButton
                             }
@@ -199,12 +194,12 @@ fun TorrentToMagnetScreen(
                         modifier = Modifier
                             .align(Alignment.End)
                             .wrapContentSize(),
-                        containerColor = md_theme_light_tertiaryContainer,
+                        containerColor = LightGreen,
                         content = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_sync),
                                 contentDescription = stringResource(R.string.convert),
-                                tint = md_theme_light_tertiary
+                                tint = DarkGreen
                             )
                         }
                     )
@@ -222,15 +217,4 @@ fun getFileName(context: Context, uri: Uri): String {
     val fileName = nameIndex?.let { cursor.getString(it) } ?: stringResource(R.string.no_file_imported)
     cursor?.close()
     return fileName
-}
-
-@Preview
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-@Composable
-fun TorrentToMagnetScreenPreview() {
-    TorrentToMagnetScreen(
-        navController = NavController(context = LocalContext.current),
-        torrentFileName = mutableStateOf(""),
-        coroutineScope = CoroutineScope(Dispatchers.IO)
-    )
 }

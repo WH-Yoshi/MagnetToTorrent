@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -19,11 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
 import com.lvca.magnettotorrent.components.MenuItem
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_tertiary
+import com.lvca.magnettotorrent.ui.theme.White
+import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,57 +34,49 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenuScreen(
     navController: NavController,
-    coroutineScope: CoroutineScope,
+    viewModel: MainViewModel
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvents.collect { event ->
+            when (event) {
+                is MainViewModel.NavigationEvent.NavigateTo -> navController.navigate(event.route)
+                MainViewModel.NavigationEvent.PopBackStack -> navController.popBackStack()
+                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {  }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_left),
-                        contentDescription = stringResource(R.string.back_icon_button),
-                        tint = md_theme_light_onTertiary,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                            .clickable {
-                                coroutineScope.launch {
-                                    navController.popBackStack()
-                                }
-                            }
-                    )
-                },
+                navigationIcon = {  },
                 title = {
                     Text(
                         text = stringResource(R.string.menu),
-                        color = md_theme_light_onTertiary,
+                        color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 23.sp,
-                        modifier = Modifier
-                            .padding(start = 16.dp),
-
+                        fontSize = 27.sp
                     )
                 },
                 actions = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_settings),
                         contentDescription = stringResource(R.string.settings_icon_button),
-                        tint = md_theme_light_onTertiary,
+                        tint = White,
                         modifier = Modifier
                             .padding(end = 12.dp)
                             .clickable {
-                                coroutineScope.launch {
-                                    navController.navigate(Routes.SETTINGS)
-                                }
+                                viewModel.navigate(Routes.SETTINGS)
                             }
                     )
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = md_theme_light_tertiary
+                    containerColor = DarkGreen
                 )
             )
         },
-        containerColor = md_theme_light_tertiary,
+        containerColor = DarkGreen,
     ) {
         LazyColumn(
             modifier = Modifier.padding(it)
@@ -91,35 +85,20 @@ fun MenuScreen(
                 MenuItem(
                     title = stringResource(R.string.magnet_to_torrent),
                     description = stringResource(R.string.magnet_to_torrent_description),
+                    direction = "left"
                 ) {
-                    navController.navigate(Routes.MTT)
+                    viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.MTT))
                 }
             }
             item {
                 MenuItem(
                     title = stringResource(R.string.torrent_to_magnet),
                     description = stringResource(R.string.torrent_to_magnet_description),
+                    direction = "right"
                 ) {
-                    navController.navigate(Routes.TTM)
-                }
-            }
-            item {
-                MenuItem(
-                    title = "Soon to come...",
-                    description = "Patience is a virtue",
-                ) {
-
+                    viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.TTM))
                 }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun MenuScreenPreview() {
-    MenuScreen(
-        navController = NavController(context = LocalContext.current),
-        coroutineScope = CoroutineScope(Dispatchers.IO),
-    )
 }

@@ -48,7 +48,7 @@ class TorrentDownloader {
         logState.add(0,context.getString(R.string.fetching_torrent_metadata))
         val torrentInfo = TorrentInfo(metadata)
         val torrentName = torrentInfo.name() ?: context.getString(R.string.unknown)
-        val torrentFile = File(outputDir, torrentName.replace("\n", "") + ".torrent")
+        val torrentFile = File(outputDir, "${torrentName.replace("\n", "").replace(Regex("[^a-zA-Z0-9._-]"), "_")}.torrent")
 
         if (torrentFile.exists()) {
             logState.add(0,context.getString(R.string.torrent_file_already_exists))

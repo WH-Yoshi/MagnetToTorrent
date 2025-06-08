@@ -10,21 +10,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
+import com.lvca.magnettotorrent.ui.theme.White
 
 @Composable
 fun LogsScreen(logsState: List<String>, logsTitle: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
     ) {
         Text(
             text = logsTitle,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp),
-            color = md_theme_light_onTertiary
+            color = White
         )
 
         LazyColumn(
@@ -38,7 +37,7 @@ fun LogsScreen(logsState: List<String>, logsTitle: String) {
                     fontSize = 12.sp,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    color = md_theme_light_onTertiary
+                    color = White
                 )
             }
         }

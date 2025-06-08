@@ -1,9 +1,6 @@
 package com.lvca.magnettotorrent
 
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,27 +13,27 @@ import com.lvca.magnettotorrent.screens.MenuScreen
 import com.lvca.magnettotorrent.screens.Routes
 import com.lvca.magnettotorrent.screens.SettingsScreen
 import com.lvca.magnettotorrent.screens.TorrentToMagnetScreen
-import kotlinx.coroutines.CoroutineScope
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun NavScreen(
     navController: NavHostController,
-    coroutineScope: CoroutineScope,
-    magnetLink: MutableState<String>?,
-    torrentFileName: MutableState<String>?,
-    initialRoute: String,
+    viewModel: MainViewModel,
     initialOffset: Float,
 ) {
+    val actualStartDestination = when (viewModel.initialRoute.value) {
+        Routes.MTT, Routes.MENU, Routes.TTM -> Routes.MAIN_PAGER_CONTAINER
+        else -> viewModel.initialRoute.value
+    }
+
     NavHost(
         navController = navController,
-        startDestination = initialRoute
+        startDestination = actualStartDestination
     ) {
         composable(
-            route = Routes.MTT,
+            route = Routes.MAIN_PAGER_CONTAINER,
             enterTransition = {
                 materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
+                    initialOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
             exitTransition = {
@@ -45,8 +42,9 @@ fun NavScreen(
                 )
             },
         ) {
-            MagnetToTorrentScreen(navController, coroutineScope, magnetLink!!)
+            PagerScreen(navController, viewModel)
         }
+
         composable(
             route = Routes.SETTINGS,
             enterTransition = {
@@ -56,41 +54,11 @@ fun NavScreen(
             },
             exitTransition = {
                 materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
+                    targetOffsetX = { toTheRight(it, initialOffset) },
                 )
             },
         ) {
-            SettingsScreen(navController, coroutineScope)
-        }
-        composable(
-            route = Routes.MENU,
-            enterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            exitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-        ) {
-            MenuScreen(navController, coroutineScope)
-        }
-        composable(
-            route = Routes.TTM,
-            enterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            exitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-        ) {
-            TorrentToMagnetScreen(navController, coroutineScope, torrentFileName!!)
+            SettingsScreen(navController, viewModel)
         }
     }
 }

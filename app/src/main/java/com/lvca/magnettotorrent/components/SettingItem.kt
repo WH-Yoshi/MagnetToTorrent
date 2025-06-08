@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import com.lvca.magnettotorrent.ui.theme.md_theme_light_onTertiary
+import com.lvca.magnettotorrent.ui.theme.White
 
 @Composable
 fun SettingItem(title: String, description: String, icon: Painter?, onClick: () -> Unit) {
@@ -35,7 +35,7 @@ fun SettingItem(title: String, description: String, icon: Painter?, onClick: () 
                     modifier = Modifier
                         .padding(start = 8.dp, end = 16.dp)
                         .size(24.dp),
-                    tint = md_theme_light_onTertiary
+                    tint = White
                 )
             }
             Column(
