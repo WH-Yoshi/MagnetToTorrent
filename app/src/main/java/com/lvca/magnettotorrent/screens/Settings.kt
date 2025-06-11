@@ -25,11 +25,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
+import com.lvca.magnettotorrent.components.SettingItem
 import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.White
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +78,7 @@ fun SettingsScreen(
                 )
             )
         },
+        containerColor = DarkGreen,
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -95,6 +95,14 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
+                    SettingItem(
+                        title = stringResource(id = R.string.settings_about_title),
+                        description = stringResource(id = R.string.settings_about_description),
+                        icon = painterResource(id = R.drawable.ic_info),
+                        onClick = {
+                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
+                        }
+                    )
                     Text(
                         text = "Coming soon...",
                         color = White,

@@ -12,23 +12,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
 import com.lvca.magnettotorrent.components.MenuItem
+import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.White
-import com.lvca.magnettotorrent.ui.theme.DarkGreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

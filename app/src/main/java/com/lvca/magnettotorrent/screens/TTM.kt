@@ -3,10 +3,8 @@ package com.lvca.magnettotorrent.screens
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.OpenableColumns
 import android.widget.Toast
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,8 +26,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,19 +33,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
-import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
-import com.lvca.magnettotorrent.ui.theme.White
 import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.LightGreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
+import com.lvca.magnettotorrent.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,6 +91,7 @@ fun TorrentToMagnetScreen(
                 )
             )
         },
+        containerColor = DarkGreen,
     ) {
         Surface(
             modifier = Modifier

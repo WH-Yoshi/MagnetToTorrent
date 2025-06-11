@@ -33,7 +33,7 @@ fun LogsScreen(logsState: List<String>, logsTitle: String) {
             items(logsState.size) { index ->
                 val log = logsState[index]
                 Text(
-                    text = "-$log",
+                    text = "- $log",
                     fontSize = 12.sp,
                     modifier = Modifier
                         .fillMaxWidth(),

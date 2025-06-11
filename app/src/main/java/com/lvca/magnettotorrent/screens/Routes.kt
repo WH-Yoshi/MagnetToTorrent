@@ -2,11 +2,12 @@ package com.lvca.magnettotorrent.screens
 
 class Routes {
     companion object {
-        const val MTT = "magnetToTorrent"
-        const val TTM = "torrentToMagnet"
-        const val SETTINGS = "settings"
-        const val MENU = "menu"
+        const val ABOUT: String = "about"
+        const val MTT: String = "magnetToTorrent"
+        const val TTM: String = "torrentToMagnet"
+        const val SETTINGS: String = "settings"
+        const val MENU: String = "menu"
 
-        const val MAIN_PAGER_CONTAINER = "main_pager_container"
+        const val MAIN_PAGER_CONTAINER: String = "main_pager_container"
     }
 }

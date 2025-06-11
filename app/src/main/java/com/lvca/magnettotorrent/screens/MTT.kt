@@ -100,6 +100,7 @@ fun MagnetToTorrentScreen(
                 )
             )
         },
+        containerColor = DarkGreen,
     ) { innerPadding ->
         Surface(
             modifier = Modifier

@@ -2,14 +2,10 @@ package com.lvca.magnettotorrent
 
 import android.content.Context
 import android.net.http.NetworkException
-import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.MutableState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException

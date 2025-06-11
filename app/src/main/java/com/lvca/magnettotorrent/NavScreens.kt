@@ -8,11 +8,9 @@ import com.lvca.magnettotorrent.motions.materialSharedAxisXIn
 import com.lvca.magnettotorrent.motions.materialSharedAxisXOut
 import com.lvca.magnettotorrent.motions.toTheLeft
 import com.lvca.magnettotorrent.motions.toTheRight
-import com.lvca.magnettotorrent.screens.MagnetToTorrentScreen
-import com.lvca.magnettotorrent.screens.MenuScreen
 import com.lvca.magnettotorrent.screens.Routes
 import com.lvca.magnettotorrent.screens.SettingsScreen
-import com.lvca.magnettotorrent.screens.TorrentToMagnetScreen
+import com.lvca.magnettotorrent.screens.AboutScreen
 
 @Composable
 fun NavScreen(
@@ -59,6 +57,21 @@ fun NavScreen(
             },
         ) {
             SettingsScreen(navController, viewModel)
+        }
+        composable(
+            route = Routes.ABOUT,
+            enterTransition = {
+                materialSharedAxisXIn(
+                    initialOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            exitTransition = {
+                materialSharedAxisXOut(
+                    targetOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+        ) {
+            AboutScreen(navController, viewModel)
         }
     }
 }
