@@ -6,7 +6,6 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
@@ -42,7 +43,6 @@ import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.LightGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.White
-import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,16 +74,23 @@ fun TorrentToMagnetScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_left),
-                        contentDescription = stringResource(R.string.arrow_left_icon),
-                        tint = White,
+                    IconButton(
+                        onClick = {
+                            viewModel.navigateToPagerPage(
+                                viewModel.getPageIndexForRoute(
+                                    Routes.MENU
+                                )
+                            )
+                        },
                         modifier = Modifier
                             .padding(start = 12.dp)
-                            .clickable {
-                                viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.MENU))
-                            }
-                    )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_left),
+                            contentDescription = stringResource(R.string.arrow_left_icon),
+                            tint = White,
+                        )
+                    }
                 },
                 title = {  },
                 actions = {  },
@@ -168,7 +175,7 @@ fun TorrentToMagnetScreen(
                             .padding(bottom = 16.dp),
                         content = {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_upload),
+                                painter = painterResource(id = R.drawable.ic_upload_file),
                                 contentDescription = stringResource(R.string.upload_icon_button),
                                 tint = DarkGreen
                             )

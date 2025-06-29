@@ -8,9 +8,9 @@ import com.lvca.magnettotorrent.motions.materialSharedAxisXIn
 import com.lvca.magnettotorrent.motions.materialSharedAxisXOut
 import com.lvca.magnettotorrent.motions.toTheLeft
 import com.lvca.magnettotorrent.motions.toTheRight
+import com.lvca.magnettotorrent.screens.AboutScreen
 import com.lvca.magnettotorrent.screens.Routes
 import com.lvca.magnettotorrent.screens.SettingsScreen
-import com.lvca.magnettotorrent.screens.AboutScreen
 
 @Composable
 fun NavScreen(
@@ -36,6 +36,16 @@ fun NavScreen(
             },
             exitTransition = {
                 materialSharedAxisXOut(
+                    targetOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popEnterTransition = {
+                materialSharedAxisXIn(
+                    initialOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popExitTransition = {
+                materialSharedAxisXOut(
                     targetOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
@@ -47,12 +57,22 @@ fun NavScreen(
             route = Routes.SETTINGS,
             enterTransition = {
                 materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
+                    initialOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
             exitTransition = {
                 materialSharedAxisXOut(
                     targetOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popEnterTransition = {
+                materialSharedAxisXIn(
+                    initialOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popExitTransition = {
+                materialSharedAxisXOut(
+                    targetOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
         ) {
@@ -62,12 +82,22 @@ fun NavScreen(
             route = Routes.ABOUT,
             enterTransition = {
                 materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
+                    initialOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
             exitTransition = {
                 materialSharedAxisXOut(
                     targetOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popEnterTransition = {
+                materialSharedAxisXIn(
+                    initialOffsetX = { toTheRight(it, initialOffset) },
+                )
+            },
+            popExitTransition = {
+                materialSharedAxisXOut(
+                    targetOffsetX = { toTheLeft(it, initialOffset) },
                 )
             },
         ) {

@@ -21,6 +21,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -84,16 +85,24 @@ fun MagnetToTorrentScreen(
                 navigationIcon = {  },
                 title = {  },
                 actions = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_right),
-                        contentDescription = stringResource(R.string.arrow_right_icon),
-                        tint = White,
+                    IconButton(
+                        onClick = {
+                            viewModel.navigateToPagerPage(
+                                viewModel.getPageIndexForRoute(
+                                    Routes.MENU
+                                )
+                            )
+                        },
                         modifier = Modifier
                             .padding(end = 12.dp)
-                            .clickable {
-                                viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.MENU))
-                            }
-                    )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            contentDescription = stringResource(R.string.arrow_right_icon),
+                            tint = White,
+                            modifier = Modifier
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = DarkGreen

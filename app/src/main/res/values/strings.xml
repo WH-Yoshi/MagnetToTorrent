@@ -53,4 +53,9 @@
     <string name="invalid_magnet_link">Invalid magnet link</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_description">See information about the app</string>
+    <string name="readme">README</string>
+    <string name="consult_readme"><![CDATA[Consult README file & GitHub repo]]></string>
+    <string name="general">General</string>
+    <string name="notification">Notification</string>
+    <string name="allow_notification">Allow or deny notifications</string>
 </resources>

@@ -18,15 +18,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lvca.magnettotorrent.R
+import com.lvca.magnettotorrent.ui.theme.LightGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.md_theme_light_scrim
-import com.lvca.magnettotorrent.ui.theme.LightGreen
 
 @Composable
 fun MenuItem(title: String, description: String, direction: String = "right", onClick: () -> Unit) {
     Surface(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(vertical = 8.dp),
         color = LightGreen,
         shape = RoundedCornerShape(24.dp),
         shadowElevation = 4.dp,

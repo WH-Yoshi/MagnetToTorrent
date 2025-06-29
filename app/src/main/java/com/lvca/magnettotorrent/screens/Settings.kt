@@ -1,7 +1,6 @@
 package com.lvca.magnettotorrent.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,28 +50,20 @@ fun SettingsScreen(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_left),
-                        contentDescription = stringResource(id = R.string.back_icon_button),
-                        tint = White,
+                    IconButton(
+                        onClick = { viewModel.onBackButtonPressed() },
                         modifier = Modifier
-                            .padding(start = 12.dp)
-                            .clickable {
-                                viewModel.onBackButtonPressed()
-                            }
-                    )
+                            .padding(end = 12.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_left),
+                            contentDescription = stringResource(id = R.string.back_icon_button),
+                            tint = White,
+                            modifier = Modifier
+                        )
+                    }
                 },
-                title = {
-                     Text(
-                        text = stringResource(id = R.string.settings),
-                        color = White,
-                        fontFamily = UbuntuFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 27.sp,
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                     )
-                },
+                title = { },
                 actions = {  },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = DarkGreen
@@ -87,14 +79,29 @@ fun SettingsScreen(
                 .background(DarkGreen),
             color = DarkGreen
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .padding(16.dp)
                 ) {
+                    Text(
+                        text = stringResource(id = R.string.settings),
+                        color = White,
+                        fontFamily = UbuntuFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        modifier = Modifier
+                            .padding(bottom = 32.dp)
+                    )
+                    SettingItem(
+                        title = stringResource(id = R.string.notification),
+                        description = stringResource(id = R.string.allow_notification),
+                        icon = painterResource(id = R.drawable.ic_info),
+                        onClick = {
+                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
+                        }
+                    )
                     SettingItem(
                         title = stringResource(id = R.string.settings_about_title),
                         description = stringResource(id = R.string.settings_about_description),
@@ -103,13 +110,21 @@ fun SettingsScreen(
                             viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
                         }
                     )
-                    Text(
-                        text = "Coming soon...",
-                        color = White,
-                        fontFamily = UbuntuFontFamily,
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .padding(top = 16.dp)
+                    SettingItem(
+                        title = stringResource(id = R.string.settings_about_title),
+                        description = stringResource(id = R.string.settings_about_description),
+                        icon = painterResource(id = R.drawable.ic_info),
+                        onClick = {
+                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
+                        }
+                    )
+                    SettingItem(
+                        title = stringResource(id = R.string.settings_about_title),
+                        description = stringResource(id = R.string.settings_about_description),
+                        icon = painterResource(id = R.drawable.ic_info),
+                        onClick = {
+                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
+                        }
                     )
                 }
             }
