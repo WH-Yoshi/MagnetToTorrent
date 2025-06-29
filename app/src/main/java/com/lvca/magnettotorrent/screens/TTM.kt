@@ -42,6 +42,7 @@ import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.LightGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.White
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,7 +132,7 @@ fun TorrentToMagnetScreen(
                         modifier = Modifier.padding(top = 16.dp)
                     )
                     Text(
-                        text = getFileName(context, Uri.parse(viewModel.torrentFileName.value)),  // Use the KTX extension function String.toUri instead?
+                        text = getFileName(context, viewModel.torrentFileName.value.toUri()),  // Use the KTX extension function String.toUri instead?
                         color = White,
                         fontFamily = UbuntuFontFamily,
                         fontWeight = FontWeight.Light,
