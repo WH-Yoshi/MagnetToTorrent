@@ -41,7 +41,7 @@ fun SettingsScreen(
             when (event) {
                 is MainViewModel.NavigationEvent.NavigateTo -> navController.navigate(event.route)
                 is MainViewModel.NavigationEvent.PopBackStack -> navController.popBackStack()
-                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {  }
+                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {}
             }
         }
     }
@@ -64,8 +64,8 @@ fun SettingsScreen(
                     }
                 },
                 title = { },
-                actions = {  },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                actions = { },
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = DarkGreen
                 )
             )
@@ -95,35 +95,11 @@ fun SettingsScreen(
                             .padding(bottom = 32.dp)
                     )
                     SettingItem(
-                        title = stringResource(id = R.string.notification),
-                        description = stringResource(id = R.string.allow_notification),
-                        icon = painterResource(id = R.drawable.ic_info),
-                        onClick = {
-                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
-                        }
-                    )
-                    SettingItem(
                         title = stringResource(id = R.string.settings_about_title),
                         description = stringResource(id = R.string.settings_about_description),
                         icon = painterResource(id = R.drawable.ic_info),
                         onClick = {
-                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
-                        }
-                    )
-                    SettingItem(
-                        title = stringResource(id = R.string.settings_about_title),
-                        description = stringResource(id = R.string.settings_about_description),
-                        icon = painterResource(id = R.drawable.ic_info),
-                        onClick = {
-                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
-                        }
-                    )
-                    SettingItem(
-                        title = stringResource(id = R.string.settings_about_title),
-                        description = stringResource(id = R.string.settings_about_description),
-                        icon = painterResource(id = R.drawable.ic_info),
-                        onClick = {
-                            viewModel.navigateToPagerPage(viewModel.getPageIndexForRoute(Routes.ABOUT))
+                            viewModel.navigate(Routes.ABOUT)
                         }
                     )
                 }

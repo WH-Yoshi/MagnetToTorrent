@@ -1,20 +1,20 @@
 [versions]
-agp = "8.11.0"
+agp = "9.2.1"
 easypermissionsKtx = "1.0.0"
-kotlin = "2.1.0"
-coreKtx = "1.15.0"
+jlibtorrentVersion = "2.0.12.9"
+kotlin = "2.4.10"
+coreKtx = "1.19.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.0"
-composeBom = "2025.01.01"
-mockitoCore = "5.12.0"
-navigationCompose = "2.8.6"
-robolectric = "4.8"
-workRuntimeKtx = "2.10.0"
-material = "1.12.0"
-navigationComposeJvmstubs = "2.9.0"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.11.0"
+activityCompose = "1.13.0"
+composeBom = "2026.06.01"
+mockitoCore = "5.23.0"
+navigationCompose = "2.9.8"
+robolectric = "4.16.1"
+workRuntimeKtx = "2.11.2"
+material = "1.14.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -22,6 +22,11 @@ androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 easypermissions-ktx = { module = "com.vmadalin:easypermissions-ktx", version.ref = "easypermissionsKtx" }
+jlibtorrent = { module = "com.frostwire:jlibtorrent", version.ref = "jlibtorrentVersion" }
+jlibtorrent-android-arm = { module = "com.frostwire:jlibtorrent-android-arm", version.ref = "jlibtorrentVersion" }
+jlibtorrent-android-arm64 = { module = "com.frostwire:jlibtorrent-android-arm64", version.ref = "jlibtorrentVersion" }
+jlibtorrent-android-x86 = { module = "com.frostwire:jlibtorrent-android-x86", version.ref = "jlibtorrentVersion" }
+jlibtorrent-android-x8664 = { module = "com.frostwire:jlibtorrent-android-x86_64", version.ref = "jlibtorrentVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -38,7 +43,6 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "navigation-compose-jvmstubs", version.ref = "navigationComposeJvmstubs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,5 +1,6 @@
 package com.lvca.magnettotorrent.screens
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.widget.Toast
@@ -31,9 +32,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,48 +45,44 @@ import androidx.navigation.NavController
 import com.lvca.magnettotorrent.MainViewModel
 import com.lvca.magnettotorrent.R
 import com.lvca.magnettotorrent.components.LogsScreen
-import com.lvca.magnettotorrent.convertMagnetToTorrent
 import com.lvca.magnettotorrent.insertLastCopiedMagnetLink
 import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.LightGreen
 import com.lvca.magnettotorrent.ui.theme.UbuntuFontFamily
 import com.lvca.magnettotorrent.ui.theme.White
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MagnetToTorrentScreen(
     navController: NavController,
-    viewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    mttViewModel: MTTViewModel
 ) {
+    val context = LocalContext.current
+    val imeInsets = WindowInsets.ime
+
     LaunchedEffect(Unit) {
-        viewModel.navigationEvents.collect { event ->
+        mttViewModel.initLogsTitle(context)
+        mainViewModel.navigationEvents.collect { event ->
             when (event) {
                 is MainViewModel.NavigationEvent.NavigateTo -> navController.navigate(event.route)
                 MainViewModel.NavigationEvent.PopBackStack -> navController.popBackStack()
-                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {  }
+                is MainViewModel.NavigationEvent.NavigateToPagerPage -> {}
             }
         }
     }
 
-    val context = LocalContext.current
-    val imeInsets = WindowInsets.ime
-    val logsState = remember { mutableStateListOf<String>() }
-    val logsTitle = remember { mutableStateOf(context.getString(R.string.logs)) }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = {  },
-                title = {  },
+                navigationIcon = { },
+                title = { },
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.navigateToPagerPage(
-                                viewModel.getPageIndexForRoute(
+                            mainViewModel.navigateToPagerPage(
+                                mainViewModel.getPageIndexForRoute(
                                     Routes.MENU
                                 )
                             )
@@ -104,7 +98,7 @@ fun MagnetToTorrentScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = DarkGreen
                 )
             )
@@ -140,11 +134,16 @@ fun MagnetToTorrentScreen(
                         fontSize = 17.sp
                     )
                     OutlinedTextField(
-                        value = viewModel.magnetLink.value,
+                        value = mttViewModel.magnetLink.value,
                         onValueChange = { newValue ->
-                            viewModel.magnetLink.value = newValue
+                            mttViewModel.magnetLink.value = newValue
                         },
-                        label = { Text(stringResource(R.string.magnet_link), fontFamily = UbuntuFontFamily) },
+                        label = {
+                            Text(
+                                stringResource(R.string.magnet_link),
+                                fontFamily = UbuntuFontFamily
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = DarkGreen,
@@ -159,13 +158,14 @@ fun MagnetToTorrentScreen(
                         singleLine = true,
                         trailingIcon = {
                             AnimatedVisibility(
-                                visible = viewModel.magnetLink.value.isNotEmpty(),
+                                visible = mttViewModel.magnetLink.value.isNotEmpty(),
                                 enter = fadeIn(),
                                 exit = fadeOut(),
                                 modifier = Modifier
                                     .align(Alignment.End)
                                     .padding(end = 12.dp)
-                                    .wrapContentSize())
+                                    .wrapContentSize()
+                            )
                             {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_backspace),
@@ -173,15 +173,21 @@ fun MagnetToTorrentScreen(
                                     tint = White,
                                     modifier = Modifier
                                         .clickable {
-                                            viewModel.magnetLink.value = ""
-                                            logsState.clear()
+                                            mttViewModel.magnetLink.value = ""
+                                            mttViewModel.clearLogs()
                                         }
                                 )
                             }
                         },
                     )
-                    HorizontalDivider(Modifier.padding(top = 16.dp, bottom = 16.dp), color = Color.Gray)
-                    LogsScreen(logsState = logsState, logsTitle = logsTitle.value)
+                    HorizontalDivider(
+                        Modifier.padding(top = 16.dp, bottom = 16.dp),
+                        color = Color.Gray
+                    )
+                    LogsScreen(
+                        logsState = mttViewModel.logsState,
+                        logsTitle = mttViewModel.logsTitle.value
+                    )
                 }
                 Column(
                     modifier = Modifier
@@ -194,7 +200,10 @@ fun MagnetToTorrentScreen(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            insertLastCopiedMagnetLink(context = context, magnetLink = viewModel.magnetLink)
+                            insertLastCopiedMagnetLink(
+                                context = context,
+                                magnetLink = mttViewModel.magnetLink
+                            )
                         },
                         containerColor = LightGreen,
                         modifier = Modifier
@@ -211,15 +220,17 @@ fun MagnetToTorrentScreen(
                     )
                     FloatingActionButton(
                         onClick = {
-                            val magnet = viewModel.magnetLink.value.trim()
+                            val magnet = mttViewModel.magnetLink.value.trim()
                             if (magnet.isEmpty() || !magnet.startsWith("magnet:?xt=urn:btih:")) {
-                                Toast.makeText(context, R.string.invalid_magnet_link, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    R.string.invalid_magnet_link,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@FloatingActionButton
                             }
 
-                            CoroutineScope(Dispatchers.IO).launch {
-                                convertMagnetToTorrent(context, viewModel.magnetLink.value, logsState, logsTitle)
-                            }
+                            mttViewModel.startConversion(context)
                         },
                         modifier = Modifier
                             .align(Alignment.End)

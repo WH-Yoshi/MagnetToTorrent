@@ -1,12 +1,15 @@
+import com.android.build.api.dsl.ApplicationExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
-android {
+extensions.configure<ApplicationExtension>("android") {
     namespace = "com.lvca.magnettotorrent"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.lvca.magnettotorrent"
@@ -32,20 +35,22 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
     }
 }
 
+extensions.configure<KotlinAndroidProjectExtension>("kotlin") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
 dependencies {
-    implementation(files("libs/jlibtorrent-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-android-arm-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-android-arm64-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-android-x86-1.2.19.0.jar"))
-    implementation(files("libs/jlibtorrent-android-x86_64-1.2.19.0.jar"))
+    implementation(libs.jlibtorrent)
+    implementation(libs.jlibtorrent.android.arm)
+    implementation(libs.jlibtorrent.android.arm64)
+    implementation(libs.jlibtorrent.android.x86)
+    implementation(libs.jlibtorrent.android.x8664)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.easypermissions.ktx)

@@ -1,6 +1,7 @@
 package com.lvca.magnettotorrent
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,27 +21,38 @@ import com.lvca.magnettotorrent.screens.Routes
 import com.lvca.magnettotorrent.ui.theme.DarkGreen
 import com.lvca.magnettotorrent.ui.theme.MagnetToTorrentTheme
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    val magnetLink = mutableStateOf("")
-    val torrentFileName = mutableStateOf("")
     var initialRoute = mutableStateOf(Routes.MENU)
+
+    private val _incomingMagnetLink = MutableSharedFlow<String>(replay = 1)
+    val incomingMagnetLink = _incomingMagnetLink.asSharedFlow()
+
+    private val _incomingTorrentUri = MutableSharedFlow<Uri>(replay = 1)
+    val incomingTorrentUri = _incomingTorrentUri.asSharedFlow()
 
     fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_VIEW) {
             val dataString = intent.dataString
+            val dataUri = intent.data
             if (dataString != null) {
-                when {
-                    dataString.startsWith("magnet:") -> {
-                        magnetLink.value = dataString
-                        initialRoute.value = Routes.MTT
+                if (dataString.startsWith("magnet:")) {
+                    viewModelScope.launch {
+                        _incomingMagnetLink.emit(dataString)
                     }
-                    dataString.endsWith(".torrent") -> {
-                        torrentFileName.value = dataString
-                        initialRoute.value = Routes.TTM
+                    initialRoute.value = Routes.MTT
+                }
+            }
+            if (dataUri != null) {
+                if (intent.type == "application/x-bittorrent" || dataUri.toString().endsWith(".torrent")) {
+                    viewModelScope.launch {
+                        _incomingTorrentUri.emit(dataUri)
                     }
+                    initialRoute.value = Routes.TTM
                 }
             }
         }

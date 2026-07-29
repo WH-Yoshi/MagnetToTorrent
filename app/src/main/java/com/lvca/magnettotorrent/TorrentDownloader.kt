@@ -34,26 +34,30 @@ class TorrentDownloader {
             timeoutLog = context.getString(R.string.for_a_maximum_of_1min)
         }
 
-        logState.add(0,context.getString(R.string.fetching_magnet_metadata) + " " + timeoutLog)
-        val metadata = sessionManager.fetchMagnet(magnetUri, timeout)
+        logState.add(0, context.getString(R.string.fetching_magnet_metadata) + " " + timeoutLog)
+        val metadata = sessionManager.fetchMagnet(magnetUri, timeout, outputDir)
         if (metadata == null) {
             triedMagnetLinks.add(magnetUri)
             if (timeout == 60) {
-                logState.add(0,context.getString(R.string.unable_to_fetch_torrent_data))
+                logState.add(0, context.getString(R.string.unable_to_fetch_torrent_data))
             } else {
                 logState.add(context.getString(R.string.change_link))
             }
         }
 
-        logState.add(0,context.getString(R.string.fetching_torrent_metadata))
+        logState.add(0, context.getString(R.string.fetching_torrent_metadata))
         val torrentInfo = TorrentInfo(metadata)
         val torrentName = torrentInfo.name() ?: context.getString(R.string.unknown)
-        val torrentFile = File(outputDir, "${torrentName.replace("\n", "").replace(Regex("[^a-zA-Z0-9._-]"), "_")}.torrent")
+        val torrentFile = File(
+            outputDir,
+            "${torrentName.replace("\n", "").replace(Regex("[^a-zA-Z0-9._-]"), "_")}.torrent"
+        )
 
         if (torrentFile.exists()) {
-            logState.add(0,context.getString(R.string.torrent_file_already_exists))
+            logState.add(0, context.getString(R.string.torrent_file_already_exists))
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, R.string.torrent_file_already_exists, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.torrent_file_already_exists, Toast.LENGTH_SHORT)
+                    .show()
             }
             return
         }
@@ -67,7 +71,10 @@ class TorrentDownloader {
             }
             return
         }
-        logState.add(0,context.getString(R.string.saved_torrent_file_to) + " " + torrentFile.absolutePath)
+        logState.add(
+            0,
+            context.getString(R.string.saved_torrent_file_to) + " " + torrentFile.absolutePath
+        )
 
         withContext(Dispatchers.Main) {
             Toast.makeText(context, R.string.torrent_file_saved, Toast.LENGTH_SHORT).show()

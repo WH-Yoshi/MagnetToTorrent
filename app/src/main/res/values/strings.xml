@@ -58,4 +58,8 @@
     <string name="general">General</string>
     <string name="notification">Notification</string>
     <string name="allow_notification">Allow or deny notifications</string>
+    <string name="reading_torrent_file">Reading torrent file…</string>
+    <string name="error_reading_file">Error reading file</string>
+    <string name="magnet_link_generated">Magnet link generated and copied to clipboard!</string>
+    <string name="magnet_link_copied_to_clipboard">Magnet link copied to clipboard</string>
 </resources>

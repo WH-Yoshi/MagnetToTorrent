@@ -1,6 +1,9 @@
 package com.lvca.magnettotorrent
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +22,7 @@ fun NavScreen(
     initialOffset: Float,
 ) {
     val actualStartDestination = when (viewModel.initialRoute.value) {
-        Routes.MTT, Routes.MENU, Routes.TTM -> Routes.MAIN_PAGER_CONTAINER
+        Routes.MTT, Routes.MENU -> Routes.MAIN_PAGER_CONTAINER
         else -> viewModel.initialRoute.value
     }
 
@@ -27,81 +30,39 @@ fun NavScreen(
         navController = navController,
         startDestination = actualStartDestination
     ) {
-        composable(
-            route = Routes.MAIN_PAGER_CONTAINER,
-            enterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-            exitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popEnterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popExitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-        ) {
+        animatedComposable(Routes.MAIN_PAGER_CONTAINER, initialOffset) {
             PagerScreen(navController, viewModel)
         }
 
-        composable(
-            route = Routes.SETTINGS,
-            enterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-            exitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popEnterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popExitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-        ) {
+        animatedComposable(Routes.SETTINGS, initialOffset) {
             SettingsScreen(navController, viewModel)
         }
-        composable(
-            route = Routes.ABOUT,
-            enterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-            exitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popEnterTransition = {
-                materialSharedAxisXIn(
-                    initialOffsetX = { toTheRight(it, initialOffset) },
-                )
-            },
-            popExitTransition = {
-                materialSharedAxisXOut(
-                    targetOffsetX = { toTheLeft(it, initialOffset) },
-                )
-            },
-        ) {
+
+        animatedComposable(Routes.ABOUT, initialOffset) {
             AboutScreen(navController, viewModel)
         }
     }
+}
+
+private fun NavGraphBuilder.animatedComposable(
+    route: String,
+    initialOffset: Float,
+    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        enterTransition = {
+            materialSharedAxisXIn(initialOffsetX = { toTheLeft(it, initialOffset) })
+        },
+        exitTransition = {
+            materialSharedAxisXOut(targetOffsetX = { toTheRight(it, initialOffset) })
+        },
+        popEnterTransition = {
+            materialSharedAxisXIn(initialOffsetX = { toTheRight(it, initialOffset) })
+        },
+        popExitTransition = {
+            materialSharedAxisXOut(targetOffsetX = { toTheLeft(it, initialOffset) })
+        },
+        content = content
+    )
 }
